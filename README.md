@@ -1,2 +1,2 @@
 # Worqly
-Realtime collaborative workspace with chat, CRDT-powered docs, voice rooms, and AI assistants built on an event-driven WebSocket backend.
+A real-time collaborative workspace platform where teams can chat in channels, edit documents simultaneously, join voice/video rooms, and use AI assistants, powered by an event-driven realtime backend architecture.
