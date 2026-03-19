@@ -1,0 +1,28 @@
+{
+  "name": "worqly",
+  "private": true,
+  "packageManager": "npm@11.8.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w @worqly/web",
+    "dev:realtime": "npm run dev -w @worqly/realtime",
+    "dev:worker": "npm run dev -w @worqly/worker",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "db:generate": "npm run db:generate -w @worqly/db",
+    "db:migrate": "npm run db:migrate -w @worqly/db"
+  },
+  "devDependencies": {
+    "@types/node": "*",
+    "typescript": "*"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1"
+  }
+}
