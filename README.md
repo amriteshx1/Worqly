@@ -2,13 +2,13 @@
 
 Worqly is a portfolio-grade collaborative workspace starter: chat, docs, rooms, and AI on top of a shared realtime architecture.
 
-## Phase 1 Included
+## Phase 2 Included
 
-- `apps/web`: Next.js app with Better Auth wiring, workspace creation flow, and a protected workspace shell.
-- `apps/realtime`: Fastify + Socket.IO starter for workspace join, presence, typing, and message event fan-out.
+- `apps/web`: Next.js app with Better Auth, workspace creation, and a live workspace shell.
+- `apps/realtime`: Fastify + Socket.IO service handling workspace join, channel switching, live messages, typing signals, and presence updates.
 - `apps/worker`: BullMQ worker scaffold for async AI commands, starting with `/summary`.
 - `packages/db`: Drizzle schema and database client for auth, organizations, chat, docs, rooms, events, and AI jobs.
-- `packages/shared`: shared event contracts and validation schemas.
+- `packages/shared`: shared event contracts plus reusable realtime message/presence types.
 
 ## Local Setup
 
@@ -26,9 +26,15 @@ If PowerShell blocks `npm`, use `npm.cmd` instead.
 - Realtime server: `npm run dev:realtime`
 - Worker: `npm run dev:worker`
 
+For the live Phase 2 demo, open the same workspace in two tabs or two browsers and send messages in `#general` or `#phase-2-build`.
+
 ## Verified
 
 - `npm run typecheck --workspaces --if-present`
+- `npm run build -w @worqly/realtime`
+- `npm run build -w @worqly/worker`
+- `npm run build -w @worqly/db`
+- `npm run build -w @worqly/shared`
 - `npm run build -w @worqly/web`
 
 The web build will warn if `BETTER_AUTH_URL` or `BETTER_AUTH_SECRET` are missing or left at placeholder values.
