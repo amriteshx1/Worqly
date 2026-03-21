@@ -33,13 +33,16 @@ export const eventPayloadSchemas = {
   "message.sent": baseEventSchema.extend({
     channelId: z.string().min(1),
     messageId: z.string().min(1),
+    authorName: z.string().min(1),
     body: z.string().min(1)
   }),
   "message.typing.started": baseEventSchema.extend({
-    channelId: z.string().min(1)
+    channelId: z.string().min(1),
+    userName: z.string().min(1)
   }),
   "message.typing.stopped": baseEventSchema.extend({
-    channelId: z.string().min(1)
+    channelId: z.string().min(1),
+    userName: z.string().min(1)
   }),
   "doc.updated": baseEventSchema.extend({
     documentId: z.string().min(1),
