@@ -17,6 +17,15 @@ export default async function WorkspacePage({ params }: WorkspacePageProps) {
 
   const { slug } = await params;
   const userName = session.user.name ?? session.user.email ?? "Workspace owner";
+  const userId = session.user.id ?? session.user.email;
+  const realtimeUrl = process.env.NEXT_PUBLIC_REALTIME_URL ?? "http://localhost:4001";
 
-  return <WorkspaceShell userName={userName} workspaceSlug={slug} />;
+  return (
+    <WorkspaceShell
+      realtimeUrl={realtimeUrl}
+      userId={userId}
+      userName={userName}
+      workspaceSlug={slug}
+    />
+  );
 }

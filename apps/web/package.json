@@ -18,7 +18,8 @@
     "next": "*",
     "postgres": "*",
     "react": "*",
-    "react-dom": "*"
+    "react-dom": "*",
+    "socket.io-client": "*"
   },
   "devDependencies": {
     "@types/react": "*",
