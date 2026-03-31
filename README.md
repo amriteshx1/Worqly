@@ -1,4 +1,4 @@
-# Worqly
+﻿# Worqly
 
 Worqly is a portfolio-grade collaborative workspace starter: chat, docs, rooms, and AI on top of a shared realtime architecture.
 
