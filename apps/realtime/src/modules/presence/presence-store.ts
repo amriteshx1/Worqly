@@ -1,15 +1,9 @@
-type PresenceState = {
-  workspaceId: string;
-  userId: string;
-  socketId: string;
-  activeSurface: string;
-  connectedAt: string;
-};
+import type { PresenceState } from "@worqly/shared";
 
 export class PresenceStore {
-  private readonly entries = new Map<string, PresenceState>();
+  private readonly entries = new Map<string, PresenceState & { socketId: string }>();
 
-  set(state: PresenceState) {
+  set(state: PresenceState & { socketId: string }) {
     this.entries.set(state.socketId, state);
   }
 
@@ -21,7 +15,33 @@ export class PresenceStore {
     return this.entries.get(socketId);
   }
 
+  setActiveSurface(socketId: string, activeSurface: string) {
+    const state = this.entries.get(socketId);
+
+    if (!state) {
+      return;
+    }
+
+    this.entries.set(socketId, {
+      ...state,
+      activeSurface
+    });
+  }
+
   listByWorkspace(workspaceId: string) {
-    return [...this.entries.values()].filter((entry) => entry.workspaceId === workspaceId);
+    const workspaceEntries = [...this.entries.values()].filter((entry) => entry.workspaceId === workspaceId);
+    const deduped = new Map<string, PresenceState>();
+
+    for (const entry of workspaceEntries) {
+      deduped.set(entry.userId, {
+        workspaceId: entry.workspaceId,
+        userId: entry.userId,
+        userName: entry.userName,
+        activeSurface: entry.activeSurface,
+        connectedAt: entry.connectedAt
+      });
+    }
+
+    return [...deduped.values()];
   }
 }

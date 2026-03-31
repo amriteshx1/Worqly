@@ -1,15 +1,24 @@
-import cors from "@fastify/cors";
+﻿import cors from "@fastify/cors";
+import { parseEventEnvelope } from "@worqly/shared";
 import Fastify from "fastify";
 import { Server } from "socket.io";
 import { z } from "zod";
 import { realtimeConfig } from "./config.js";
 import { registerChatGateway } from "./modules/chat/chat-gateway.js";
+import { ChatStore } from "./modules/chat/chat-store.js";
 import { PresenceStore } from "./modules/presence/presence-store.js";
 
 const joinWorkspaceSchema = z.object({
   workspaceId: z.string().min(1),
   userId: z.string().min(1),
+  userName: z.string().min(1),
   activeSurface: z.string().min(1)
+});
+
+const joinChannelSchema = z.object({
+  workspaceId: z.string().min(1),
+  channelId: z.string().min(1),
+  userId: z.string().min(1)
 });
 
 const app = Fastify({
@@ -24,6 +33,7 @@ const io = new Server(app.server, {
 });
 
 const presenceStore = new PresenceStore();
+const chatStore = new ChatStore();
 
 await app.register(cors, {
   origin: realtimeConfig.corsOrigin,
@@ -41,26 +51,60 @@ app.get("/health", async () => {
 io.on("connection", (socket) => {
   socket.on("workspace:join", (payload) => {
     const input = joinWorkspaceSchema.parse(payload);
+    const workspaceState = chatStore.bootstrap(input.workspaceId);
 
     socket.join(input.workspaceId);
     presenceStore.set({
       workspaceId: input.workspaceId,
       userId: input.userId,
+      userName: input.userName,
       activeSurface: input.activeSurface,
       socketId: socket.id,
       connectedAt: new Date().toISOString()
     });
 
+    socket.emit("workspace.bootstrap", {
+      workspaceId: input.workspaceId,
+      channels: workspaceState.channels,
+      messagesByChannel: workspaceState.messagesByChannel,
+      presence: presenceStore.listByWorkspace(input.workspaceId)
+    });
+
     io.to(input.workspaceId).emit("presence.updated", presenceStore.listByWorkspace(input.workspaceId));
   });
 
-  registerChatGateway(io, socket);
+  socket.on("channel:join", (payload) => {
+    const input = joinChannelSchema.parse(payload);
+    const state = presenceStore.getBySocketId(socket.id);
+
+    if (!state || state.userId !== input.userId) {
+      return;
+    }
+
+    presenceStore.setActiveSurface(socket.id, input.channelId);
+    io.to(input.workspaceId).emit("presence.updated", presenceStore.listByWorkspace(input.workspaceId));
+  });
+
+  registerChatGateway({ io, socket, chatStore });
 
   socket.on("disconnect", () => {
     const staleEntry = presenceStore.getBySocketId(socket.id);
     presenceStore.delete(socket.id);
 
     if (staleEntry) {
+      if (staleEntry.activeSurface.startsWith("channel-")) {
+        socket.to(staleEntry.workspaceId).emit(
+          "message.typing.stopped",
+          parseEventEnvelope("message.typing.stopped", {
+            workspaceId: staleEntry.workspaceId,
+            channelId: staleEntry.activeSurface,
+            actorId: staleEntry.userId,
+            userName: staleEntry.userName,
+            sentAt: new Date().toISOString()
+          })
+        );
+      }
+
       io.to(staleEntry.workspaceId).emit(
         "presence.updated",
         presenceStore.listByWorkspace(staleEntry.workspaceId)
