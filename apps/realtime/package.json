@@ -15,6 +15,7 @@
     "fastify": "*",
     "ioredis": "*",
     "socket.io": "*",
+    "yjs": "^13.6.30",
     "zod": "*"
   },
   "devDependencies": {
