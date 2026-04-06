@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import type {
   ChatMessage,
@@ -9,6 +9,8 @@ import type {
 } from "@worqly/shared";
 import { defaultWorkspaceChannels, workspaceBootstrapSchema } from "@worqly/shared";
 import { draftDocs, draftRooms } from "@/lib/demo-data";
+import Link from "next/link";
+import type { Route } from "next";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 
@@ -390,12 +392,16 @@ export function WorkspaceShell({ realtimeUrl, userId, userName, workspaceSlug }:
           <div className="stack support-stack">
             <p className="column-label">Docs</p>
             {draftDocs.map((doc) => (
-              <article className="list-card compact" key={doc.id}>
+              <Link
+                className="list-card compact doc-link"
+                href={`/workspaces/${workspaceSlug}/docs/${doc.id}` as Route}
+                key={doc.id}
+              >
                 <div>
                   <strong>{doc.title}</strong>
                   <p>{doc.presence}</p>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
 
