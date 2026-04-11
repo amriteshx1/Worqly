@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --font-heading: "Aptos Display", "Trebuchet MS", sans-serif;
   --font-body: "Aptos", "Segoe UI", sans-serif;
   --bg: #f4efe6;
@@ -462,3 +462,79 @@ input {
   }
 }
 
+
+.doc-link {
+  text-decoration: none;
+}
+
+.document-page {
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.document-layout {
+  display: grid;
+  grid-template-columns: 0.95fr 1.8fr 0.95fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.document-sidebar,
+.document-editor-panel,
+.document-meta-panel {
+  min-height: 520px;
+}
+
+.doc-nav-link {
+  display: grid;
+  gap: 6px;
+  border-radius: 20px;
+  padding: 16px;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(17, 35, 48, 0.08);
+}
+
+.doc-nav-link span {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.doc-nav-link.active {
+  background: rgba(79, 143, 139, 0.16);
+  border-color: rgba(79, 143, 139, 0.28);
+}
+
+.back-link {
+  display: inline-flex;
+  margin-top: 18px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.document-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.document-editor {
+  width: 100%;
+  min-height: 560px;
+  resize: vertical;
+  border: 1px solid rgba(17, 35, 48, 0.08);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 20px;
+  color: var(--text);
+  font: inherit;
+  line-height: 1.65;
+}
+
+@media (max-width: 1100px) {
+  .document-layout {
+    grid-template-columns: 1fr;
+  }
+}
