@@ -1,14 +1,14 @@
-﻿# Worqly
+# Worqly
 
 Worqly is a portfolio-grade collaborative workspace starter: chat, docs, rooms, and AI on top of a shared realtime architecture.
 
-## Phase 2 Included
+## Phase 3 Included
 
-- `apps/web`: Next.js app with Better Auth, workspace creation, and a live workspace shell.
-- `apps/realtime`: Fastify + Socket.IO service handling workspace join, channel switching, live messages, typing signals, and presence updates.
+- `apps/web`: Next.js app with Better Auth, workspace creation, a live workspace shell, and a collaborative docs route.
+- `apps/realtime`: Fastify + Socket.IO service handling workspace join, channel switching, live messages, typing signals, presence updates, and Yjs-backed document sync.
 - `apps/worker`: BullMQ worker scaffold for async AI commands, starting with `/summary`.
 - `packages/db`: Drizzle schema and database client for auth, organizations, chat, docs, rooms, events, and AI jobs.
-- `packages/shared`: shared event contracts plus reusable realtime message/presence types.
+- `packages/shared`: shared event contracts plus reusable realtime message, presence, and document models.
 
 ## Local Setup
 
@@ -26,7 +26,10 @@ If PowerShell blocks `npm`, use `npm.cmd` instead.
 - Realtime server: `npm run dev:realtime`
 - Worker: `npm run dev:worker`
 
-For the live Phase 2 demo, open the same workspace in two tabs or two browsers and send messages in `#general` or `#phase-2-build`.
+For the live demo:
+
+- Open the same workspace in two tabs or two browsers and send messages in #general or #phase-2-build.
+- Open the same document in two tabs or two browsers and confirm shared edits appear live.
 
 ## Verified
 
