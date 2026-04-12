@@ -1,11 +1,12 @@
-﻿import cors from "@fastify/cors";
-import { parseEventEnvelope } from "@worqly/shared";
+import cors from "@fastify/cors";
+import { documentJoinSchema, documentSurfaceId, documentUpdateSchema, parseEventEnvelope } from "@worqly/shared";
 import Fastify from "fastify";
 import { Server } from "socket.io";
 import { z } from "zod";
 import { realtimeConfig } from "./config.js";
 import { registerChatGateway } from "./modules/chat/chat-gateway.js";
 import { ChatStore } from "./modules/chat/chat-store.js";
+import { DocumentStore } from "./modules/docs/document-store.js";
 import { PresenceStore } from "./modules/presence/presence-store.js";
 
 const joinWorkspaceSchema = z.object({
@@ -34,6 +35,11 @@ const io = new Server(app.server, {
 
 const presenceStore = new PresenceStore();
 const chatStore = new ChatStore();
+const documentStore = new DocumentStore();
+
+function getDocumentRoomId(workspaceId: string, documentId: string) {
+  return `${workspaceId}:document:${documentId}`;
+}
 
 await app.register(cors, {
   origin: realtimeConfig.corsOrigin,
@@ -83,6 +89,28 @@ io.on("connection", (socket) => {
 
     presenceStore.setActiveSurface(socket.id, input.channelId);
     io.to(input.workspaceId).emit("presence.updated", presenceStore.listByWorkspace(input.workspaceId));
+  });
+
+  socket.on("document:join", (payload) => {
+    const input = documentJoinSchema.parse(payload);
+    const state = presenceStore.getBySocketId(socket.id);
+
+    socket.join(getDocumentRoomId(input.workspaceId, input.documentId));
+
+    if (state && state.userId === input.userId) {
+      presenceStore.setActiveSurface(socket.id, documentSurfaceId(input.documentId));
+      io.to(input.workspaceId).emit("presence.updated", presenceStore.listByWorkspace(input.workspaceId));
+    }
+
+    socket.emit("document.bootstrap", documentStore.bootstrap(input.workspaceId, input.documentId));
+  });
+
+  socket.on("document:update", (payload) => {
+    const update = documentStore.applyUpdate(documentUpdateSchema.parse(payload));
+
+    socket
+      .to(getDocumentRoomId(update.workspaceId, update.documentId))
+      .emit("document.updated", update);
   });
 
   registerChatGateway({ io, socket, chatStore });
