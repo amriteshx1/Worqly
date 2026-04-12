@@ -19,7 +19,8 @@
     "postgres": "*",
     "react": "*",
     "react-dom": "*",
-    "socket.io-client": "*"
+    "socket.io-client": "*",
+    "yjs": "^13.6.30"
   },
   "devDependencies": {
     "@types/react": "*",
